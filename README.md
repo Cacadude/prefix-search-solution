@@ -152,6 +152,50 @@ python tools/evaluate.py \
 # - reports/metrics.json - метрики
 ```
 
+#### Просмотр результатов
+
+**Просмотр метрик:**
+```bash
+# Windows (PowerShell)
+Get-Content reports/metrics.json | ConvertFrom-Json | ConvertTo-Json
+
+# Linux/Mac
+cat reports/metrics.json
+
+# Или откройте файл в любом текстовом редакторе
+```
+
+**Просмотр детальных результатов (CSV):**
+
+**Windows:**
+```powershell
+# Открыть CSV в Excel/Notepad++ с кодировкой UTF-8
+# Или через PowerShell:
+Import-Csv reports/evaluation_results.csv -Encoding UTF8 | Format-Table
+
+# Или просто открыть в блокноте (убедитесь, что кодировка UTF-8)
+notepad reports/evaluation_results.csv
+```
+
+**Linux/Mac:**
+```bash
+# Просмотр через cat
+cat reports/evaluation_results.csv
+
+# Или открыть в редакторе с поддержкой UTF-8
+nano reports/evaluation_results.csv
+# или
+code reports/evaluation_results.csv
+```
+
+**Важно**: При открытии CSV файла убедитесь, что используется кодировка **UTF-8**, иначе русские символы могут отображаться некорректно.
+
+**Структура CSV файла:**
+- `query` - поисковый запрос
+- `result_1`, `result_2`, `result_3` - топ-3 результата (ID товаров)
+- `score_1`, `score_2`, `score_3` - релевантность результатов
+- `category_1`, `category_2`, `category_3` - категории товаров
+
 ## Особенности реализации
 
 ### 1. Индексация и анализаторы
@@ -198,6 +242,59 @@ python tools/evaluate.py \
 - **Детальные результаты**: топ-3 результата для каждого запроса сохранены в `reports/evaluation_results.csv`
 
 **Целевой показатель**: ≥70% покрытие без ручных whitelist-правил ✅ **ПРЕВЫШЕН**
+
+### Как посмотреть результаты
+
+**1. Запуск оценки:**
+```bash
+python tools/evaluate.py \
+    --queries data/prefix_queries.csv \
+    --output reports/evaluation_results.csv \
+    --base-url http://localhost:5000
+```
+
+**2. Просмотр метрик (JSON):**
+```bash
+# Windows PowerShell
+Get-Content reports/metrics.json
+
+# Linux/Mac
+cat reports/metrics.json
+```
+
+**3. Просмотр детальных результатов (CSV в UTF-8):**
+
+**Windows:**
+```powershell
+# Вариант 1: Через PowerShell (правильная кодировка UTF-8)
+Import-Csv reports/evaluation_results.csv -Encoding UTF8 | Format-Table
+
+# Вариант 2: Открыть в Excel/Notepad++ (выберите кодировку UTF-8 при открытии)
+# Excel: Данные → Из текста → Выберите файл → Кодировка: UTF-8
+# Notepad++: Кодировка → Преобразовать в UTF-8
+
+# Вариант 3: Через блокнот (убедитесь, что файл сохранен в UTF-8)
+notepad reports/evaluation_results.csv
+```
+
+**Linux/Mac:**
+```bash
+# Просмотр через cat (UTF-8 по умолчанию)
+cat reports/evaluation_results.csv
+
+# Или открыть в редакторе
+nano reports/evaluation_results.csv
+code reports/evaluation_results.csv  # VS Code
+```
+
+**Важно**: CSV файл сохранен в кодировке **UTF-8**. При открытии в Excel или других программах убедитесь, что выбрана правильная кодировка, иначе русские символы могут отображаться некорректно (например, `Ð¼Ð°Ñ\x81Ð»Ð¾` вместо `масло`).
+
+**Структура CSV файла:**
+- `query` - поисковый запрос
+- `result_1`, `result_2`, `result_3` - ID товаров (топ-3 результата)
+- `score_1`, `score_2`, `score_3` - релевантность (score от Elasticsearch)
+- `category_1`, `category_2`, `category_3` - категории товаров
+- `name_1`, `name_2`, `name_3` - названия товаров
 
 ### Детализация по типам запросов
 
