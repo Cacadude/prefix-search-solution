@@ -1,0 +1,53 @@
+services:
+  elasticsearch:
+    image: elasticsearch:8.11.0
+    container_name: prefix_search_elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  init_data:
+    build: .
+    container_name: prefix_search_init
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    volumes:
+      - ./data:/app/data:ro
+    command: >
+      sh -c "
+        echo 'Ожидание готовности Elasticsearch...' &&
+        sleep 30 &&
+        python src/load_catalog.py --catalog data/catalog_products.xml --host elasticsearch --port 9200 --index products &&
+        echo 'Данные загружены успешно!'
+      "
+    restart: "no"
+
+  search_api:
+    build: .
+    container_name: prefix_search_api
+    depends_on:
+      - elasticsearch
+      - init_data
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/app/data:ro
+    environment:
+      - ES_HOST=elasticsearch
+      - ES_PORT=9200
+      - INDEX_NAME=products
+
+volumes:
+  es_data:
+
