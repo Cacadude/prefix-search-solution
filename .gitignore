@@ -31,3 +31,17 @@ reports/*.json
 .vscode/
 .idea/
 
+# Временные файлы и скрипты
+auto_deploy.py
+deploy.py
+deployment_results.json
+prepare_for_submission.ps1
+ЧТО_ПУШИТЬ.md
+ИНСТРУКЦИЯ_ДЛЯ_ПОЛЬЗОВАТЕЛЯ.md
+ПОДГОТОВКА_К_ОТПРАВКЕ.md
+ПРОВЕРКА_ТРЕБОВАНИЙ.md
+ФИНАЛЬНЫЙ_ОТЧЕТ.md
+
+# Вложенные папки (если есть)
+prefix-search-solution/
+
